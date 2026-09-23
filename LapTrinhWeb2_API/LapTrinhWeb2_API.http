@@ -1,0 +1,6 @@
+@LapTrinhWeb2_API_HostAddress = http://localhost:5291
+
+GET {{LapTrinhWeb2_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
