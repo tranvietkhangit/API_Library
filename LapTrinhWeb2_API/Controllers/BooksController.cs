@@ -23,11 +23,15 @@ namespace LapTrinhWeb2_API.Controllers
             _bookRepository = bookRepository;
         }
         [HttpGet("get-all-books")]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery,
+ [FromQuery] string? sortBy, [FromQuery] bool isAscending,
+ [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
-            var allBooks = _bookRepository.GetAllBooks();
+            var allBooks = _bookRepository.GetAllBooks(filterOn, filterQuery, sortBy,
+           isAscending, pageNumber, pageSize);
             return Ok(allBooks);
         }
+
         [HttpGet]
         [Route("get-book-by-id/{id}")]
         public IActionResult GetBookById([FromRoute] int id)
