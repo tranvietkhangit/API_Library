@@ -62,13 +62,15 @@ namespace LapTrinhWeb2_API.Repositories
         }
         public Authors? DeleteAuthorById(int id)
         {
-            var authorDomain = _dbContext.Authors.FirstOrDefault(n => n.Id == id);
-            if (authorDomain != null)
+            var authorDomain = _dbContext.Authors
+                .FirstOrDefault(n => n.Id == id);
+            if (authorDomain == null)
             {
-                _dbContext.Authors.Remove(authorDomain);
-                _dbContext.SaveChanges();
+                return null;
             }
-            return null;
+            _dbContext.Authors.Remove(authorDomain);
+            _dbContext.SaveChanges();
+            return authorDomain;
         }
 
     }

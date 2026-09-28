@@ -30,12 +30,16 @@ namespace LapTrinhWeb2_API.Controllers
             var authorWithId = _authorRepository.GetAuthorById(id);
             return Ok(authorWithId);
         }
-        [HttpPost("add - author")]
-        public IActionResult AddAuthors([FromBody] AddAuthorRequestDTO
-       addAuthorRequestDTO)
+        [HttpPost("add-author")]
+        public IActionResult AddAuthors(
+    [FromBody] AddAuthorRequestDTO addAuthorRequestDTO)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var authorAdd = _authorRepository.AddAuthor(addAuthorRequestDTO);
-            return Ok();
+            return Ok(authorAdd);
         }
         [HttpPut("update-author-by-id/{id}")]
         public IActionResult UpdateBookById(int id, [FromBody] AuthorNoIdDTO authorDTO)
@@ -44,10 +48,31 @@ namespace LapTrinhWeb2_API.Controllers
             return Ok(authorUpdate);
         }
         [HttpDelete("delete-author-by-id/{id}")]
-        public IActionResult DeleteBookById(int id)
+        public IActionResult DeleteAuthorById(int id)
         {
+            var author = _dbContext.Authors
+                .FirstOrDefault(a => a.Id == id);
+
+            if (author == null)
+            {
+                return NotFound(new
+                {
+                    message = "Author không tồn tại"
+                });
+            }
+            bool hasBooks = _dbContext.Books_Authors
+                .Any(ba => ba.AuthorId == id);
+
+            if (hasBooks)
+            {
+                ModelState.AddModelError(
+                    "AuthorId",
+                    "Không thể xóa Author vì Author đang được gắn với Book"
+                );
+                return Conflict(ModelState);
+            }
             var authorDelete = _authorRepository.DeleteAuthorById(id);
-            return Ok();
+            return Ok(authorDelete);
         }
     }
 }

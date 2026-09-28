@@ -3,8 +3,12 @@ namespace LapTrinhWeb2_API.Models.DTO
 {
     public class addBookRequestDTO
     {
-        [Required]
-        [MinLength(10)]
+        [Required(ErrorMessage = "Title không được để trống")]
+        [MinLength(10, ErrorMessage = "Title phải có ít nhất 10 ký tự")]
+        [RegularExpression(
+            @"^[a-zA-ZÀ-ỹ0-9\s]+$",
+            ErrorMessage = "Title không được chứa ký tự đặc biệt"
+        )]
         public string? Title { get; set; }
         public string? Description { get; set; }
         public bool IsRead { get; set; }

@@ -39,18 +39,16 @@ namespace LapTrinhWeb2_API.Controllers
             var bookWithIdDTO = _bookRepository.GetBookById(id);
             return Ok(bookWithIdDTO);
         }
-        
+
         [HttpPost("add-book")]
-        [ValidateModel]
-        //[Authorize(Roles = "Write")]
         public IActionResult AddBook([FromBody] addBookRequestDTO addBookRequestDTO)
         {
-            if (ValidateAddBook(addBookRequestDTO))
+            if (!ValidateAddBook(addBookRequestDTO))
             {
-                var bookAdd = _bookRepository.AddBook(addBookRequestDTO);
-                return Ok(bookAdd);
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
+            var bookAdd = _bookRepository.AddBook(addBookRequestDTO);
+            return Ok(bookAdd);
         }
 
         [HttpPut("update-book-by-id/{id}")]
@@ -70,22 +68,99 @@ namespace LapTrinhWeb2_API.Controllers
         {
             if (addBookRequestDTO == null)
             {
-                ModelState.AddModelError(nameof(addBookRequestDTO), $"Please add book data");
+                ModelState.AddModelError(
+                    nameof(addBookRequestDTO),
+                    "Please add book data"
+                );
+
                 return false;
             }
-            if (string.IsNullOrEmpty(addBookRequestDTO.Description))
+            if (string.IsNullOrWhiteSpace(addBookRequestDTO.Description))
             {
-                ModelState.AddModelError(nameof(addBookRequestDTO.Description), $"{nameof(addBookRequestDTO.Description)} cannot be null");
+                ModelState.AddModelError(
+                    nameof(addBookRequestDTO.Description),
+                    "Description cannot be null"
+                );
             }
-            if (addBookRequestDTO.Rate < 0 || addBookRequestDTO.Rate > 5)
+            bool publisherExists = _dbContext.Publishers
+                .Any(p => p.Id == addBookRequestDTO.PublisherID);
+
+            if (!publisherExists)
             {
-                ModelState.AddModelError(nameof(addBookRequestDTO.Rate), $"{nameof(addBookRequestDTO.Rate)} cannot be less than 0 and more than 5");
+                ModelState.AddModelError(
+                    nameof(addBookRequestDTO.PublisherID),
+                    "PublisherID không tồn tại"
+                );
             }
-            if (ModelState.ErrorCount > 0)
+            int year = addBookRequestDTO.DateAdded.Year;
+            var startDate = new DateTime(year, 1, 1);
+            var endDate = startDate.AddYears(1);
+            int publisherBookCount = _dbContext.Books
+                .Count(b =>
+                    b.PublisherID == addBookRequestDTO.PublisherID &&
+                    b.DateAdded >= startDate &&
+                    b.DateAdded < endDate
+                );
+            if (publisherBookCount >= 100)
             {
-                return false;
+                ModelState.AddModelError(
+                    nameof(addBookRequestDTO.PublisherID),
+                    $"PublisherID {addBookRequestDTO.PublisherID} đã xuất bản tối đa 100 sách trong năm {year}"
+                );
             }
-            return true;
+            bool duplicateTitle = _dbContext.Books.Any(b => b.PublisherID == addBookRequestDTO.PublisherID && b.Title == addBookRequestDTO.Title);
+            if (duplicateTitle)
+            {
+                ModelState.AddModelError(
+                    nameof(addBookRequestDTO.Title),
+                    "Book Title đã tồn tại trong Publisher này"
+                );
+            }
+            if (addBookRequestDTO.AuthorIds == null ||
+                addBookRequestDTO.AuthorIds.Count == 0)
+            {
+                ModelState.AddModelError(
+                    nameof(addBookRequestDTO.AuthorIds),
+                    "Book phải có ít nhất 1 Author"
+                );
+            }
+            else
+            {
+                foreach (var authorId in addBookRequestDTO.AuthorIds)
+                {
+                    bool authorExists = _dbContext.Authors
+                        .Any(a => a.Id == authorId);
+                    if (!authorExists)
+                    {
+                        ModelState.AddModelError(
+                            nameof(addBookRequestDTO.AuthorIds),
+                            $"AuthorID {authorId} không tồn tại"
+                        );
+                    }
+                    int bookCount = _dbContext.Books_Authors
+                        .Count(ba => ba.AuthorId == authorId);
+                    if (bookCount >= 20)
+                    {
+                        ModelState.AddModelError(
+                            nameof(addBookRequestDTO.AuthorIds),
+                            $"AuthorID {authorId} đã có tối đa 20 sách"
+                        );
+                    }
+                }
+                var duplicateAuthorIds = addBookRequestDTO.AuthorIds
+            .GroupBy(id => id)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToList();
+                foreach (var authorId in duplicateAuthorIds)
+                {
+                    ModelState.AddModelError(
+                        nameof(addBookRequestDTO.AuthorIds),
+                        $"AuthorID {authorId} bị gán nhiều lần cho Book"
+                    );
+                }
+            }
+            return ModelState.IsValid;
         }
         #endregion
     }

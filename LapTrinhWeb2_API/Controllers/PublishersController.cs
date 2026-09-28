@@ -30,11 +30,26 @@ namespace LapTrinhWeb2_API.Controllers
             var publisherWithId = _publisherRepository.GetPublisherById(id);
             return Ok(publisherWithId);
         }
-        [HttpPost("add - publisher")]
-        public IActionResult AddPublisher([FromBody] AddPublisherRequestDTO
-       addPublisherRequestDTO)
+        [HttpPost("add-publisher")]
+        public IActionResult AddPublisher(
+    [FromBody] AddPublisherRequestDTO addPublisherRequestDTO)
         {
-            var publisherAdd = _publisherRepository.AddPublisher(addPublisherRequestDTO);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            bool publisherExists = _dbContext.Publishers
+                .Any(p => p.Name == addPublisherRequestDTO.Name);
+            if (publisherExists)
+            {
+                ModelState.AddModelError(
+                    nameof(addPublisherRequestDTO.Name),
+                    "Publisher name đã tồn tại"
+                );
+                return BadRequest(ModelState);
+            }
+            var publisherAdd = _publisherRepository
+                .AddPublisher(addPublisherRequestDTO);
             return Ok(publisherAdd);
         }
         [HttpPut("update-publisher-by-id/{id}")]
@@ -43,14 +58,33 @@ namespace LapTrinhWeb2_API.Controllers
         {
             var publisherUpdate = _publisherRepository.UpdatePublisherById(id,
            publisherDTO);
-
             return Ok(publisherUpdate);
         }
         [HttpDelete("delete-publisher-by-id/{id}")]
         public IActionResult DeletePublisherById(int id)
         {
+            var publisher = _dbContext.Publishers
+                .FirstOrDefault(p => p.Id == id);
+            if (publisher == null)
+            {
+                return NotFound(new
+                {
+                    message = "Publisher không tồn tại"
+                });
+            }
+            bool hasBooks = _dbContext.Books
+                .Any(b => b.PublisherID == id);
+            if (hasBooks)
+            {
+                ModelState.AddModelError(
+                    "PublisherID",
+                    "Không thể xóa Publisher vì đang có Book tham chiếu"
+                );
+
+                return Conflict(ModelState);
+            }
             var publisherDelete = _publisherRepository.DeletePublisherById(id);
-            return Ok();
+            return Ok(publisherDelete);
         }
     }
 }

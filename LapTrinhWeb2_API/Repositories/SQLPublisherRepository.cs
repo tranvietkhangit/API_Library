@@ -65,13 +65,15 @@ namespace LapTrinhWeb2_API.Repositories
         }
         public Publisher? DeletePublisherById(int id)
         {
-            var publisherDomain = _dbContext.Publishers.FirstOrDefault(n => n.Id == id);
-            if (publisherDomain != null)
+            var publisherDomain = _dbContext.Publishers
+                .FirstOrDefault(n => n.Id == id);
+            if (publisherDomain == null)
             {
-                _dbContext.Publishers.Remove(publisherDomain);
-                _dbContext.SaveChanges();
+                return null;
             }
-            return null;
+            _dbContext.Publishers.Remove(publisherDomain);
+            _dbContext.SaveChanges();
+            return publisherDomain;
         }
     }
 }
