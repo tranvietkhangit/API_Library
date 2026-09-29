@@ -1,4 +1,5 @@
-﻿using LapTrinhWeb2_API.Data;
+﻿using LapTrinhWeb2_API.CustomActionFilter;
+using LapTrinhWeb2_API.Data;
 using LapTrinhWeb2_API.Models;
 using LapTrinhWeb2_API.Models.Domain;
 using LapTrinhWeb2_API.Models.DTO;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LapTrinhWeb2_API.CustomActionFilter;
+using System.Text.Json;
 
 namespace LapTrinhWeb2_API.Controllers
 {
@@ -18,10 +19,12 @@ namespace LapTrinhWeb2_API.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly IBookRepository _bookRepository;
-        public BooksController(AppDbContext dbContext, IBookRepository bookRepository)
+        private readonly ILogger<BooksController> _logger;
+        public BooksController(AppDbContext dbContext, IBookRepository bookRepository, ILogger<BooksController> logger)
         {
             _dbContext = dbContext;
             _bookRepository = bookRepository;
+            _logger = logger;
         }
         [HttpGet("get-all-books")]
         [Authorize(Roles = "Read")]
@@ -29,8 +32,12 @@ namespace LapTrinhWeb2_API.Controllers
  [FromQuery] string? sortBy, [FromQuery] bool isAscending,
  [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
-            var allBooks = _bookRepository.GetAllBooks(filterOn, filterQuery, sortBy,
+            _logger.LogInformation("GetAll Book Action method was invoked");
+            _logger.LogWarning("This is a warning log");
+            _logger.LogError("This is an error log");
+                       var allBooks = _bookRepository.GetAllBooks(filterOn, filterQuery, sortBy,
            isAscending, pageNumber, pageSize);
+            _logger.LogInformation($"Finished GetAllBook request with data{JsonSerializer.Serialize(allBooks)}");
             return Ok(allBooks);
         }
 
