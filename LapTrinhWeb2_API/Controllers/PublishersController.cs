@@ -1,13 +1,15 @@
 ﻿using LapTrinhWeb2_API.Data;
 using LapTrinhWeb2_API.Models.Domain;
-using Microsoft.AspNetCore.Mvc;
 using LapTrinhWeb2_API.Models.DTO;
 using LapTrinhWeb2_API.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LapTrinhWeb2_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PublishersController : ControllerBase
     {
         private readonly AppDbContext _dbContext;

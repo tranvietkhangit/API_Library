@@ -13,6 +13,7 @@ namespace LapTrinhWeb2_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
@@ -134,7 +135,7 @@ namespace LapTrinhWeb2_API.Controllers
                     {
                         ModelState.AddModelError(
                             nameof(addBookRequestDTO.AuthorIds),
-                            $"AuthorID {authorId} không tồn tại"
+                            $"AuthorID không tồn tại"
                         );
                     }
                     int bookCount = _dbContext.Books_Authors
