@@ -21,18 +21,21 @@ namespace LapTrinhWeb2_API.Controllers
             _authorRepository = authorRepository;
         }
         [HttpGet("get-all-author")]
+        [Authorize(Roles = "Read")]
         public IActionResult GetAllAuthor()
         {
             var allAuthors = _authorRepository.GellAllAuthors();
             return Ok(allAuthors);
         }
         [HttpGet("get-author-by-id/{id}")]
+        [Authorize(Roles = "Read")]
         public IActionResult GetAuthorById(int id)
         {
             var authorWithId = _authorRepository.GetAuthorById(id);
             return Ok(authorWithId);
         }
         [HttpPost("add-author")]
+        [Authorize(Roles = "Write")]
         public IActionResult AddAuthors(
     [FromBody] AddAuthorRequestDTO addAuthorRequestDTO)
         {
@@ -44,12 +47,14 @@ namespace LapTrinhWeb2_API.Controllers
             return Ok(authorAdd);
         }
         [HttpPut("update-author-by-id/{id}")]
+        [Authorize(Roles = "Write")]
         public IActionResult UpdateBookById(int id, [FromBody] AuthorNoIdDTO authorDTO)
         {
             var authorUpdate = _authorRepository.UpdateAuthorById(id, authorDTO);
             return Ok(authorUpdate);
         }
         [HttpDelete("delete-author-by-id/{id}")]
+        [Authorize(Roles = "Write")]
         public IActionResult DeleteAuthorById(int id)
         {
             var author = _dbContext.Authors

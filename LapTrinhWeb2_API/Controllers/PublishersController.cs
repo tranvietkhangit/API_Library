@@ -21,18 +21,21 @@ namespace LapTrinhWeb2_API.Controllers
             _publisherRepository = publisherRepository;
         }
         [HttpGet("get-all-publisher")]
+        [Authorize(Roles = "Read")]
         public IActionResult GetAllPublisher()
         {
             var allPublishers = _publisherRepository.GetAllPublishers();
             return Ok(allPublishers);
         }
         [HttpGet("get-publisher-by-id")]
+        [Authorize(Roles = "Read")]
         public IActionResult GetPublisherById(int id)
         {
             var publisherWithId = _publisherRepository.GetPublisherById(id);
             return Ok(publisherWithId);
         }
         [HttpPost("add-publisher")]
+        [Authorize(Roles = "Write")]
         public IActionResult AddPublisher(
     [FromBody] AddPublisherRequestDTO addPublisherRequestDTO)
         {
@@ -55,6 +58,7 @@ namespace LapTrinhWeb2_API.Controllers
             return Ok(publisherAdd);
         }
         [HttpPut("update-publisher-by-id/{id}")]
+        [Authorize(Roles = "Write")]
         public IActionResult UpdatePublisherById(int id, [FromBody] PublisherNoIdDTO
        publisherDTO)
         {
@@ -63,6 +67,7 @@ namespace LapTrinhWeb2_API.Controllers
             return Ok(publisherUpdate);
         }
         [HttpDelete("delete-publisher-by-id/{id}")]
+        [Authorize(Roles = "Write")]
         public IActionResult DeletePublisherById(int id)
         {
             var publisher = _dbContext.Publishers

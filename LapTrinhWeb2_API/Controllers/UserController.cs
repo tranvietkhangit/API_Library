@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using LapTrinhWeb2_API.Models.DTO;
+﻿using LapTrinhWeb2_API.Models.DTO;
 using LapTrinhWeb2_API.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+
 namespace LapTrinhWeb2_API.Controllers
 {
     [Route("api/[controller]")]
@@ -41,5 +42,32 @@ namespace LapTrinhWeb2_API.Controllers
             }
             return BadRequest("Something wrong!");
         }
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequestDTO)
+        {
+            var user = await _userManager.FindByEmailAsync(loginRequestDTO.Username);
+            if (user != null)
+            {
+                var checkPasswordResult = await
+               _userManager.CheckPasswordAsync(user, loginRequestDTO.Password);
+            if (checkPasswordResult)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles != null)
+                    {
+                        var jwtToken = _tokenRepository.CreateJWTToken(user,
+                       roles.ToList());
+                        var response = new LoginResponseDTO
+                        {
+                            JwtToken = jwtToken
+                        };
+
+                        return Ok(response); // trả về chuỗi token
+                    }
+                }
+            }
+            return BadRequest("Username or password incorrect");
+        } 
     }
 }
