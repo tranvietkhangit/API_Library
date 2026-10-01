@@ -63,7 +63,7 @@ namespace LapTrinhWeb2_API.Controllers
                             JwtToken = jwtToken
                         };
 
-                        return Ok(response); // trả về chuỗi token
+                        return Ok(response);
                     }
                 }
             }

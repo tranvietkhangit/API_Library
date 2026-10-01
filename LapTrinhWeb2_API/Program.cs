@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var _logger = new LoggerConfiguration()
- .WriteTo.Console()// ghi ra console
+ .WriteTo.Console()
  .WriteTo.File("Logs/Book_log.txt", rollingInterval: RollingInterval.Minute)
  .MinimumLevel.Information()
  .CreateLogger();
@@ -56,11 +56,13 @@ options.AddSecurityRequirement(new OpenApiSecurityRequirement
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<BookAuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BookAuthConnection")));
 builder.Services.AddScoped<IBookRepository, SQLBookRepository>();
 builder.Services.AddScoped<IAuthorRepository, SQLAuthorRepository>();
 builder.Services.AddScoped<IPublisherRepository, SQLPublisherRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IImageRepository, LocalImageRepository>();
 builder.Services.AddIdentityCore<IdentityUser>()
  .AddRoles<IdentityRole>()
  .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("Book").AddEntityFrameworkStores<BookAuthDbContext>()

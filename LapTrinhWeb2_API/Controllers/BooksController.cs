@@ -99,7 +99,7 @@ namespace LapTrinhWeb2_API.Controllers
                 .Any(p => p.Id == addBookRequestDTO.PublisherID);
 
             if (!publisherExists)
-            {
+            {         
                 ModelState.AddModelError(
                     nameof(addBookRequestDTO.PublisherID),
                     "PublisherID không tồn tại"

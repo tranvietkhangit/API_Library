@@ -28,5 +28,6 @@ namespace LapTrinhWeb2_API.Data
         public DbSet<Authors> Authors { get; set; }
         public DbSet<Book_Author> Books_Authors { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
+        public DbSet<Image> Images { get; set; }
     }
 }
