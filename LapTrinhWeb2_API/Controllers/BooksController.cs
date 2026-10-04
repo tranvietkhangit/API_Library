@@ -27,7 +27,8 @@ namespace LapTrinhWeb2_API.Controllers
             _logger = logger;
         }
         [HttpGet("get-all-books")]
-        [Authorize(Roles = "Read")]
+        //[Authorize(Roles = "Read")]
+        [AllowAnonymous]
         public IActionResult GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery,
  [FromQuery] string? sortBy, [FromQuery] bool isAscending,
  [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
@@ -43,7 +44,8 @@ namespace LapTrinhWeb2_API.Controllers
 
         [HttpGet]
         [Route("get-book-by-id/{id}")]
-        [Authorize(Roles = "Read")]
+        //[Authorize(Roles = "Read")]
+        [AllowAnonymous]
         public IActionResult GetBookById([FromRoute] int id)
         {
             var bookWithIdDTO = _bookRepository.GetBookById(id);
@@ -51,7 +53,8 @@ namespace LapTrinhWeb2_API.Controllers
         }
 
         [HttpPost("add-book")]
-        [Authorize(Roles = "Write")]
+        //[Authorize(Roles = "Write")]
+        [AllowAnonymous]
         public IActionResult AddBook([FromBody] addBookRequestDTO addBookRequestDTO)
         {
             if (!ValidateAddBook(addBookRequestDTO))
@@ -63,14 +66,16 @@ namespace LapTrinhWeb2_API.Controllers
         }
 
         [HttpPut("update-book-by-id/{id}")]
-        [Authorize(Roles = "Write")]
+        //[Authorize(Roles = "Write")]
+        [AllowAnonymous]
         public IActionResult UpdateBookById(int id, [FromBody] addBookRequestDTO bookDTO)
         {
             var updateBook = _bookRepository.UpdateBookById(id, bookDTO);
             return Ok(updateBook);
         }
         [HttpDelete("delete-book-by-id/{id}")]
-        [Authorize(Roles = "Write")]
+        //[Authorize(Roles = "Write")]
+        [AllowAnonymous]
         public IActionResult DeleteBookById(int id)
         {
             var deleteBook = _bookRepository.DeleteBookById(id);
