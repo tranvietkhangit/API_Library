@@ -2,7 +2,7 @@
 using LapTrinhWeb2_API.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Authorization;
 namespace LapTrinhWeb2_API.Controllers
 {
     [Route("api/[controller]")]
@@ -68,6 +68,6 @@ namespace LapTrinhWeb2_API.Controllers
                 }
             }
             return BadRequest("Username or password incorrect");
-        } 
+        }
     }
 }

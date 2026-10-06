@@ -42,13 +42,19 @@
 </form>
 
 <br />
-
-<a class="btn btn-primary"
-   asp-controller="Books"
-   asp-action="addBook">
-    Add new book
+<a asp-controller="Login"
+   asp-action="Logout"
+   class="btn btn-danger">
+    Logout
 </a>
-
+@if (Context.Session.GetString("Role") == "Write")
+{
+    <a class="btn btn-primary"
+       asp-controller="Books"
+       asp-action="addBook">
+        Add new book
+    </a>
+}
 <br />
 <br />
 
@@ -61,8 +67,12 @@
         <th>Publisher</th>
         <th>Rating</th>
         <th>Detail</th>
-        <th>Edit</th>
-        <th>Delete</th>
+
+        @if (Context.Session.GetString("Role") == "Write")
+        {
+            <th>Edit</th>
+            <th>Delete</th>
+        }
     </tr>
 
     @foreach (var item in Model)
@@ -114,21 +124,24 @@
                 </a>
             </td>
 
-            <td>
-                <a asp-controller="Books"
-                   asp-action="editBook"
-                   asp-route-id="@item.Id">
-                    Edit
-                </a>
-            </td>
+            @if (Context.Session.GetString("Role") == "Write")
+            {
+                <td>
+                    <a asp-controller="Books"
+                       asp-action="editBook"
+                       asp-route-id="@item.Id">
+                        Edit
+                    </a>
+                </td>
 
-            <td>
-                <a asp-controller="Books"
-                   asp-action="delBook"
-                   asp-route-id="@item.Id">
-                    Delete
-                </a>
-            </td>
+                <td>
+                    <a asp-controller="Books"
+                       asp-action="delBook"
+                       asp-route-id="@item.Id">
+                        Delete
+                    </a>
+                </td>
+            }
 
         </tr>
     }

@@ -1,58 +1,74 @@
 ﻿@model Library_Web.Models.DTO.BookDTO
+
 <h1>Thông tin sách:</h1>
-<img src="@Model.CoverUrl" style="float:left; width:200px; margin-right:10px;" />
+
+<p>Id: @Model.Id</p>
+
 <p>Tên sách: @Model.Title</p>
+
 <p>Mô tả: @Model.Description</p>
-<p>Date read: @Model.DateRead</p>
+
 <p>
-	Is Read?:
-	@if (Model.IsRead == true)
-	{
-		<input type="radio" id="isRead" name="isRead" value="Yes" checked>
-	
-		<label>Read</label>
-		<input type="radio" id="isRead" name="isRead" value="No">
-
-		<label>Not Read</label>
-	}
-	else
-	{
-		<input type="radio" id="isRead" name="isRead" value="Yes">
-	
-		<label>Read</label>
-		<input type="radio" id="isRead" name="isRead" value="No" checked>
-
-		<label>Not Read</label>
-	}
+    Tác giả:
+    @if (Model.AuthorNames != null && Model.AuthorNames.Any())
+    {
+        foreach (var author in Model.AuthorNames)
+        {
+            <span>@author</span>
+            <br />
+        }
+    }
+    else
+    {
+        <span>Chưa có tác giả</span>
+    }
 </p>
-<p>
-	Review:
-	@if (Model.IsRead == true)
-	{
-		for (var i = 0; i < Model.Rate; i++)
-		{
-			<span class="glyphicon glyphicon-star"></span>
-		}
-	}
-	else
-	{
-		<span>Not yet read</span>
-	}
-<p>Thể loại: @Model.Genre</p>
-<p>Date read: @Model.DateAdded</p>
+
 <p>Nhà xuất bản: @Model.PublisherName</p>
-<p>
-	Tác giả:
 
-	@if (Model.AuthorNames != null && Model.AuthorNames.Any())
-	{
-		foreach (var item in Model.AuthorNames)
-		{
-			<a href="#linktacgia">@item</a>
-		}
-	}
-	else
-	{
-		<span>Chưa có tác giả</span>
-	}
+<p>Thể loại: @Model.Genre</p>
+
+<p>
+    Trạng thái:
+    @if (Model.IsRead == true)
+    {
+        <span>Đã đọc</span>
+    }
+    else
+    {
+        <span>Chưa đọc</span>
+    }
 </p>
+
+<p>
+    Đánh giá:
+    @if (Model.Rate.HasValue)
+    {
+        <span>@Model.Rate</span>
+    }
+    else
+    {
+        <span>Chưa đánh giá</span>
+    }
+</p>
+
+<p>Ngày đọc: @Model.DateRead</p>
+
+<p>Ngày thêm: @Model.DateAdded</p>
+
+@if (!string.IsNullOrEmpty(Model.CoverUrl))
+{
+    <p>
+        Ảnh bìa:
+        <br />
+        <img src="@Model.CoverUrl"
+             style="width:200px;" />
+    </p>
+}
+
+<br />
+
+<a asp-controller="Books"
+   asp-action="Index">
+    Quay lại danh sách
+</a>

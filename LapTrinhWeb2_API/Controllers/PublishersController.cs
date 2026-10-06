@@ -21,8 +21,8 @@ namespace LapTrinhWeb2_API.Controllers
             _publisherRepository = publisherRepository;
         }
         [HttpGet("get-all-publisher")]
-        //[Authorize(Roles = "Read")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Read,Write")]
+        //[AllowAnonymous]
         public IActionResult GetAllPublisher()
         {
             var allPublishers = _publisherRepository.GetAllPublishers();
