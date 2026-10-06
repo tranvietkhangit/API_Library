@@ -5,6 +5,8 @@ using LapTrinhWeb2_API.Models.Domain;
 
 namespace LapTrinhWeb2_API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class ImagesController : ControllerBase
     {
         private readonly IImageRepository _imageRepository;

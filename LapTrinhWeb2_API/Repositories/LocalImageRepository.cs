@@ -46,5 +46,6 @@ namespace LapTrinhWeb2_API.Repositories
                 throw ex;
             }
         }
+
     }
 }

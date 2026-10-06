@@ -172,7 +172,6 @@ namespace LapTrinhWeb2_API.Repositories
                 _dbContext.SaveChanges();
             }
             return bookDomain;
-
         }
     }
 }
